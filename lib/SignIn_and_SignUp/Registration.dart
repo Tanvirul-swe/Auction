@@ -1,76 +1,38 @@
 import 'package:auction_app/Constants/TextField_design.dart';
-import 'package:auction_app/SignIn_and_SignUp/Registration.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class SignIn extends StatefulWidget {
-  static  String id = 'SignIn';
+class Registration extends StatefulWidget {
+  static String id = 'Registration';
   @override
-  _SignInState createState() => _SignInState();
+  _RegistrationState createState() => _RegistrationState();
 }
 
-class _SignInState extends State<SignIn> {
+class _RegistrationState extends State<Registration> {
   // final signIn = Authentication();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController NameController = TextEditingController();
   bool passwordValidation = false;
   bool emailValidation = false;
   bool emailEmptyValidation = false;
   bool passwordEmptyValidation = false;
+  bool nameEmptyValidation = false;
+  bool email_validation = false;
+  bool name_validation = false;
+  bool useEmail = false;
   bool emailVerify = false;
+
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  Future<void> _displayTextInputDialog(BuildContext context) async {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Please enter your gmail'),
-            content: TextField(
-              onChanged: (value) {
-                setState(() {
-                  email = value;
-                });
-              },
-              decoration: InputDecoration(hintText: "Registered gmail"),
-            ),
-            actions: <Widget>[
-              FlatButton(
-                color: Colors.red,
-                textColor: Colors.white,
-                child: Text('Cancel'),
-                onPressed: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
-                },
-              ),
-              FlatButton(
-                color: Colors.green,
-                textColor: Colors.white,
-                child: Text('Ok'),
-                onPressed: () {
-                  setState(() {
-                    codeDialog = email;
-                    sendPasswordResetEmail(email!);
-                    Navigator.pop(context);
-                    print(email);
-                  });
-                },
-              ),
-            ],
-          );
-        });
-  }
-
-  //Reset user password send reset link in user register email
-  Future sendPasswordResetEmail(String email) async {
-    // Toast.show("Check email", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
-    return _firebaseAuth.sendPasswordResetEmail(email: email);
-  }
+  // //Reset user password send reset link in user register email
+  // Future sendPasswordResetEmail(String email) async {
+  //   // Toast.show("Check email", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
+  //   return _firebaseAuth.sendPasswordResetEmail(email: email);
+  // }
 
   String? codeDialog;
   String? email;
@@ -78,16 +40,22 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // appBar: AppBar(
-      //   title: Text('Login',
-      //   ),
-      // ),
-
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.arrow_back),
+            color: Colors.red,
+            iconSize: 30.0),
+      ),
       body: SingleChildScrollView(
         child: Container(
           color: Colors.white,
           child: Padding(
-            padding: const EdgeInsets.all(25.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -122,7 +90,29 @@ class _SignInState extends State<SignIn> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      //Here User email Input field design.
+                      Text(
+                        'Sign UP',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      TextField(
+                        cursorColor: Colors.orange,
+                        controller: NameController,
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                        decoration: KTextFieldDecoration.copyWith(
+                            errorText:
+                                nameEmptyValidation ? 'Empty name' : null,
+                            labelText: 'Name',
+                            prefixIcon: Icon(Icons.person)),
+                      ),
                       SizedBox(
                         height: 10.0,
                       ),
@@ -133,14 +123,9 @@ class _SignInState extends State<SignIn> {
                           color: Colors.black,
                         ),
                         decoration: KTextFieldDecoration.copyWith(
-                            errorText: emailValidation
-                                ? 'Email not registered'
-                                : emailEmptyValidation
-                                    ? 'Empty email'
-                                    : emailVerify
-                                        ? 'Email not verify check email'
-                                        : null,
                             labelText: 'Email',
+                            errorText:
+                                emailEmptyValidation ? 'Empty gmail':useEmail?'Email already registered':null,
                             prefixIcon: Icon(Icons.email_outlined)),
                       ),
 
@@ -180,29 +165,47 @@ class _SignInState extends State<SignIn> {
                             textColor: Colors.white,
                             elevation: 10.0,
                             onPressed: () async {
+                              String email = emailController.text.toString();
+                              String password = passwordController.text.toString();
+                              String name = NameController.text.toString();
                               try {
                                 UserCredential userCredential =
                                     await FirebaseAuth.instance
-                                        .signInWithEmailAndPassword(
-                                  email: emailController.text.toString(),
-                                  password: passwordController.text.toString(),
+                                        .createUserWithEmailAndPassword(
+                                  email: email,
+                                  password: password,
                                 );
-                                User? user = FirebaseAuth.instance.currentUser;
 
-                                if (user != null && user.emailVerified) {
-                                  emailVerify = false;
-                                  // Navigator.pushNamed(context, Registration.id);
-                                } else if (user != null &&
-                                    !user.emailVerified) {
-                                  setState(() {
-                                    emailVerify = true;
-                                  });
+                                if(UserCredential!=null){
+                                  User? user = FirebaseAuth.instance.currentUser;
+                                  if (user!= null && !user.emailVerified) {
+                                    await user.sendEmailVerification();
+                                  }
+                                  Navigator.pop(context);
                                 }
+                                //
+                                // if (user != null && user.emailVerified) {
+                                //   emailVerify = false;
+                                // } else if (user != null &&
+                                //     !user.emailVerified) {
+                                //   await user.sendEmailVerification();
+                                //   setState(() {
+                                //     emailVerify = true;
+                                //   });
+                                // }
                               } on FirebaseAuthException catch (e) {
+
                                 setState(() {
+                                  if(e.code=='email-already-in-use'){
+                                    useEmail = true;
+                                  }
+
                                   emailController.text.isEmpty
                                       ? emailEmptyValidation = true
                                       : emailEmptyValidation = false;
+                                  NameController.text.isEmpty
+                                      ? nameEmptyValidation = true
+                                      : nameEmptyValidation = false;
                                   passwordController.text.isEmpty
                                       ? passwordEmptyValidation = true
                                       : passwordEmptyValidation = false;
@@ -216,43 +219,12 @@ class _SignInState extends State<SignIn> {
                               }
                             },
                             child: Text(
-                              'Login',
+                              'Sign Up',
                               style: GoogleFonts.lato(),
                             ),
                           ),
                           SizedBox(
                             height: 10.0,
-                          ),
-                          GestureDetector(
-                            child: Text(
-                              'Forgot password',
-                              style: TextStyle(
-                                decoration: TextDecoration.underline,
-                                color: Colors.redAccent,
-                              ),
-                            ),
-                            onTap: () {
-                              _displayTextInputDialog(context);
-                              // Do something when click forgot button.
-                            },
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0)),
-                            color: Colors.grey,
-                            textColor: Colors.white,
-                            elevation: 10.0,
-                            onPressed: () {
-                              Navigator.pushNamed(context, Registration.id);
-                              setState(() {});
-                            },
-                            child: Text(
-                              'Create Account',
-                              style: GoogleFonts.lato(),
-                            ),
                           ),
                         ],
                       ),
