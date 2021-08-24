@@ -1,4 +1,5 @@
 import 'package:auction_app/Constants/TextField_design.dart';
+import 'package:auction_app/Services/Database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -180,7 +181,9 @@ class _RegistrationState extends State<Registration> {
                                   User? user = FirebaseAuth.instance.currentUser;
                                   if (user!= null && !user.emailVerified) {
                                     await user.sendEmailVerification();
+                                    // emailVerify = true;
                                   }
+                                  // await DatabaseService(uid: user!.uid).updateUserData('mobile', 'this is iphone 11', 500);
                                   Navigator.pop(context);
                                 }
                                 //

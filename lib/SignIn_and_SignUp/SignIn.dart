@@ -1,4 +1,6 @@
+import 'package:auction_app/AuctionGallery/list_of_items.dart';
 import 'package:auction_app/Constants/TextField_design.dart';
+import 'package:auction_app/Services/Database.dart';
 import 'package:auction_app/SignIn_and_SignUp/Registration.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -191,7 +193,9 @@ class _SignInState extends State<SignIn> {
 
                                 if (user != null && user.emailVerified) {
                                   emailVerify = false;
-                                  // Navigator.pushNamed(context, Registration.id);
+                                  // await DatabaseService(uid: 'key').updateUserData('tab', 'thi is iphone 11', 10);
+
+                                  Navigator.pushNamed(context, AuctionItemList.id);
                                 } else if (user != null &&
                                     !user.emailVerified) {
                                   setState(() {
