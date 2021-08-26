@@ -1,4 +1,6 @@
 import 'package:auction_app/AuctionGallery/AddItem.dart';
+import 'package:auction_app/Dashbord/dashbord.dart';
+import 'package:auction_app/ProductDetails/product_details.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -11,13 +13,34 @@ class AuctionItemList extends StatefulWidget {
 }
 
 class _AuctionItemListState extends State<AuctionItemList> {
-  final Stream<QuerySnapshot> _usersStream =
-      FirebaseFirestore.instance.collection('ProductInformation').snapshots();
+  final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance
+      .collection('ProductInformation')
+      .doc('product')
+      .collection('productlist')
+      .snapshots();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Auction list'),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: (value) {
+          if (value == 0) {
+          } else {
+            Navigator.pushNamed(context, Dashboard.id);
+          }
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.emoji_people),
+            label: 'My post',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.camera),
+            label: 'Dashboard',
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -47,15 +70,17 @@ class _AuctionItemListState extends State<AuctionItemList> {
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                              colors: [Color(0xFFCF7BD2),Colors.blue.shade100, ],
+                              colors: [
+                                Color(0xFFCF7BD2),
+                                Colors.blue.shade100,
+                              ],
                               begin: const FractionalOffset(0.0, 1.0),
                               end: const FractionalOffset(1.0, 2.0),
                               stops: [0.0, 1.0],
-                              tileMode: TileMode.clamp
-                          ),
+                              tileMode: TileMode.clamp),
                           boxShadow: [
                             BoxShadow(
-                              //grey colored shadow
+                                //grey colored shadow
                                 color: Colors.grey,
                                 //Applying softening effect
                                 blurRadius: 3.0,
@@ -78,17 +103,20 @@ class _AuctionItemListState extends State<AuctionItemList> {
                                   )),
                             ),
                             SizedBox(
-                             width: 10,
+                              width: 10,
                             ),
                             Expanded(
                                 child: Container(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Name : ${data['product']}',style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                  ),),
+                                  Text(
+                                    'Name : ${data['product']}',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                    ),
+                                  ),
                                   Text('Minimum Bid: ${data['MinimumBit']}'),
                                   Text('End Date: ${data['EndDate']}'),
                                 ],
@@ -98,8 +126,21 @@ class _AuctionItemListState extends State<AuctionItemList> {
                         ),
                       ),
                     ),
-                    onTap: () {
-                      print(data['EndDate']);
+                    onTap: () async {
+                      // var doc_ref = await FirebaseFirestore.instance.collection("ProductInformation").get();
+                      // doc_ref.docs.forEach((result) {
+                      //   print(result.data());
+                      // });
+                      print(document.id);
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => Details(
+                              data['product'],
+                              data['Description'],
+                              data['EndDate'],
+                              data['photo'],
+                              data['MinimumBit'],
+                              document.id.toString(),
+                              data['bid'].toString())));
                     },
                   );
                 }).toList(),

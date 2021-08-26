@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:auction_app/Constants/TextField_design.dart';
 import 'package:auction_app/Services/Database.dart';
 import 'package:auction_app/Services/firebase_api.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -158,7 +159,7 @@ class _AddItemState extends State<AddItem> {
     final snapshot = await task!.whenComplete(() {});
       final urlDownload = await snapshot.ref.getDownloadURL();
      print(urlDownload.toString());
-     return  await DatabaseService(uid: 'key11').updateUserData(
+    return  await DatabaseService(uid:FirebaseAuth.instance.currentUser!.email.toString()).updateUserData(
          ProductNameController.text.toString(),
          DescriptionController.text.toString(),
          BidController.text.toString(),
