@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:auction_app/Constants/TextField_design.dart';
@@ -49,90 +48,92 @@ class _AddItemState extends State<AddItem> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      backgroundColor: Color(0xFFF5F5F5),
+      appBar: AppBar(centerTitle: true,
+        backgroundColor: Color(0xFF000080),
         title: Text('Add Item'),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xFF000080),
         onPressed: () async {
           uploadFile();
           Navigator.pop(context);
         },
-        child: Icon(Icons.save),
+        child: Icon(Icons.done),
       ),
-      body: Container(
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            gradient: LinearGradient(begin: Alignment.bottomRight, stops: [
-              0.1,
-              0.9
-            ], colors: [
-              Colors.black.withOpacity(.8),
-              Colors.black.withOpacity(.1)
-            ])),
-        child: Column(
-          children: [
-            TextField(
-              controller: ProductNameController,
-              cursorColor: Colors.orange,
-              style: TextStyle(
-                color: Colors.black,
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              TextField(
+                controller: ProductNameController,
+                cursorColor: Colors.orange,
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+                decoration: KTextFieldDecoration.copyWith(
+                    labelText: 'Product name',
+                    prefixIcon: Icon(Icons.drive_file_rename_outline)),
               ),
-              decoration: KTextFieldDecoration.copyWith(
-                  labelText: 'Product name',
-                  prefixIcon: Icon(Icons.drive_file_rename_outline)),
-            ),
-            SizedBox(
-              height: 15.0,
-            ),
-            TextField(
-              controller: DescriptionController,
-              cursorColor: Colors.orange,
-              style: TextStyle(
-                color: Colors.black,
+              SizedBox(
+                height: 15.0,
               ),
-              decoration: KTextFieldDecoration.copyWith(
-                  labelText: 'Description', prefixIcon: Icon(Icons.details)),
-            ),
-            SizedBox(
-              height: 15.0,
-            ),
-            TextField(
-              controller: BidController,
-              cursorColor: Colors.orange,
-              style: TextStyle(
-                color: Colors.black,
+              TextField(
+                controller: DescriptionController,
+                cursorColor: Colors.orange,
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+                decoration: KTextFieldDecoration.copyWith(
+                    labelText: 'Description', prefixIcon: Icon(Icons.details)),
               ),
-              decoration: KTextFieldDecoration.copyWith(
-                  labelText: 'Minimum Bit', prefixIcon: Icon(Icons.money)),
-            ),
-            SizedBox(
-              height: 15.0,
-            ),
-            RaisedButton(
-              color: Colors.white,
-              onPressed: () {
-                pickDate();
-              },
-              child: Text(getDate()),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              height: 200,
-              width: 200,
-              child: Center(
-
-                child:InkWell(
-                  onTap: (){
-                    selectFile();
-                  },
-                  child: pathcheck==false?Text('Select image'): Image.file(file!),
+              SizedBox(
+                height: 15.0,
+              ),
+              TextField(
+                controller: BidController,
+                cursorColor: Colors.orange,
+                keyboardType: TextInputType.number,
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+                decoration: KTextFieldDecoration.copyWith(
+                    labelText: 'Minimum Bit', prefixIcon: Icon(Icons.money)),
+              ),
+              SizedBox(
+                height: 15.0,
+              ),
+              RaisedButton(
+                color: Colors.white,
+                onPressed: () {
+                  pickDate();
+                },
+                child: Text(getDate()),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                height: 200,
+                width: double.infinity,
+                child: Center(
+                  child: InkWell(
+                    onTap: () {
+                      selectFile();
+                    },
+                    child: pathcheck == false
+                        ? Image.asset(
+                            'Asset/uploadimage.png',
+                            width: 100,
+                            height: 100,
+                          )
+                        : Image.file(file!),
                   ),
-                )
+                ),
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -148,7 +149,7 @@ class _AddItemState extends State<AddItem> {
     });
   }
 
-   Future uploadFile() async {
+  Future uploadFile() async {
     pathcheck = false;
     if (file == null) return null;
     final fileName = p.basename(file!.path);
@@ -157,14 +158,16 @@ class _AddItemState extends State<AddItem> {
 
     if (task == null) return null;
     final snapshot = await task!.whenComplete(() {});
-      final urlDownload = await snapshot.ref.getDownloadURL();
-     print(urlDownload.toString());
-    return  await DatabaseService(uid:FirebaseAuth.instance.currentUser!.email.toString()).updateUserData(
-         ProductNameController.text.toString(),
-         DescriptionController.text.toString(),
-         BidController.text.toString(),
-         getDate().toString(),urlDownload.toString());
+    final urlDownload = await snapshot.ref.getDownloadURL();
 
-
+    print(urlDownload.toString());
+    return await DatabaseService(
+            uid: FirebaseAuth.instance.currentUser!.email.toString())
+        .updateUserData(
+            ProductNameController.text.toString(),
+            DescriptionController.text.toString(),
+            BidController.text.toString(),
+            getDate().toString(),
+            urlDownload.toString());
   }
 }

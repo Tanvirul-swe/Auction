@@ -1,6 +1,7 @@
 import 'package:auction_app/AuctionGallery/AddItem.dart';
 import 'package:auction_app/Dashbord/dashbord.dart';
 import 'package:auction_app/ProductDetails/product_details.dart';
+import 'package:auction_app/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -22,27 +23,37 @@ class _AuctionItemListState extends State<AuctionItemList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Color(0xFF000080),
         title: Text('Auction list'),
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (value) {
           if (value == 0) {
-          } else {
+          } if(value==1) {
             Navigator.pushNamed(context, Dashboard.id);
+          }
+          if(value==2){
+            Navigator.pushNamed(context, Profile.id);
           }
         },
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.emoji_people),
-            label: 'My post',
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.camera),
+            icon: Icon(Icons.dashboard_sharp),
             label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: 'Profile',
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xFF000080),
         onPressed: () {
           Navigator.pushNamed(context, AddItem.id);
         },
@@ -117,8 +128,8 @@ class _AuctionItemListState extends State<AuctionItemList> {
                                       fontSize: 20,
                                     ),
                                   ),
-                                  Text('Minimum Bid: ${data['MinimumBit']}'),
-                                  Text('End Date: ${data['EndDate']}'),
+                                  Text('Minimum Bid: ${data['MinimumBit'].toString()}'),
+                                  Text('End Date: ${data['EndDate'].toString()}'),
                                 ],
                               ),
                             ))

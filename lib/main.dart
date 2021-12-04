@@ -4,6 +4,7 @@ import 'package:auction_app/Dashbord/dashbord.dart';
 import 'package:auction_app/ProductDetails/product_details.dart';
 import 'package:auction_app/SignIn_and_SignUp/Registration.dart';
 import 'package:auction_app/SignIn_and_SignUp/SignIn.dart';
+import 'package:auction_app/profile/profile_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +25,8 @@ class MyApp extends StatelessWidget {
           AuctionItemList.id:(context)=>AuctionItemList(),
           AddItem.id:(context)=>AddItem(),
           Dashboard.id:(context)=>Dashboard(),
+          Profile.id:(context)=>Profile(),
+          SignIn.id:(context)=>SignIn(),
         }
         // home: LoginRegistration(),
         );

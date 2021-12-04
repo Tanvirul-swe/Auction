@@ -1,5 +1,8 @@
 import 'package:auction_app/Constants/TextField_design.dart';
 import 'package:auction_app/Services/Database.dart';
+import 'package:auction_app/Services/add_user_data.dart';
+import 'package:auction_app/Services/add_user_data.dart';
+import 'package:auction_app/Services/add_user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -17,6 +20,8 @@ class _RegistrationState extends State<Registration> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController NameController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
   bool passwordValidation = false;
   bool emailValidation = false;
   bool emailEmptyValidation = false;
@@ -26,6 +31,7 @@ class _RegistrationState extends State<Registration> {
   bool name_validation = false;
   bool useEmail = false;
   bool emailVerify = false;
+  bool phone_validation = false;
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
@@ -61,22 +67,22 @@ class _RegistrationState extends State<Registration> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
-                  height: MediaQuery.of(context).size.height / 4,
+                  height: MediaQuery.of(context).size.height / 11,
                   // color: Colors.purpleAccent,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.asset(
                         'Asset/auctionimage.jpg',
-                        height: 250,
-                        width: 250,
+                        height: 100,
+                        width: 100,
                       ),
                     ],
                   ),
                 ),
                 Container(
                   padding: EdgeInsets.all(15.0),
-                  height: MediaQuery.of(context).size.height / 2,
+                  // height: MediaQuery.of(context).size.height / 1.50,
                   decoration: BoxDecoration(
                       color: Color(0xFFDFE1F3),
                       borderRadius: BorderRadius.circular(10.0),
@@ -125,8 +131,11 @@ class _RegistrationState extends State<Registration> {
                         ),
                         decoration: KTextFieldDecoration.copyWith(
                             labelText: 'Email',
-                            errorText:
-                                emailEmptyValidation ? 'Empty gmail':useEmail?'Email already registered':null,
+                            errorText: emailEmptyValidation
+                                ? 'Empty gmail'
+                                : useEmail
+                                    ? 'Email already registered'
+                                    : null,
                             prefixIcon: Icon(Icons.email_outlined)),
                       ),
 
@@ -135,6 +144,26 @@ class _RegistrationState extends State<Registration> {
                       SizedBox(
                         height: 10.0,
                       ),
+                      TextField(
+                        cursorColor: Colors.orange,
+                        controller: phoneController,
+                        obscureText: true,
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                        decoration: KTextFieldDecoration.copyWith(
+                            labelText: 'Phone',
+                            errorText: phone_validation
+                                ? 'Empty phone number'
+                                : phone_validation
+                                    ? 'Empty phone number'
+                                    : null,
+                            prefixIcon: Icon(Icons.call)),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+
                       TextField(
                         cursorColor: Colors.orange,
                         controller: passwordController,
@@ -151,10 +180,29 @@ class _RegistrationState extends State<Registration> {
                                     : null,
                             prefixIcon: Icon(Icons.password_rounded)),
                       ),
+
                       SizedBox(
                         height: 10.0,
                       ),
-
+                      TextField(
+                        cursorColor: Colors.orange,
+                        controller: addressController,
+                        obscureText: true,
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                        decoration: KTextFieldDecoration.copyWith(
+                            labelText: 'Address',
+                            errorText: phone_validation
+                                ? 'Empty address'
+                                : phone_validation
+                                    ? 'Empty address'
+                                    : null,
+                            prefixIcon: Icon(Icons.place_outlined)),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -167,8 +215,12 @@ class _RegistrationState extends State<Registration> {
                             elevation: 10.0,
                             onPressed: () async {
                               String email = emailController.text.toString();
-                              String password = passwordController.text.toString();
+                              String password =
+                                  passwordController.text.toString();
                               String name = NameController.text.toString();
+                              String phone = phoneController.text.toString();
+                              String address =
+                                  addressController.text.toString();
                               try {
                                 UserCredential userCredential =
                                     await FirebaseAuth.instance
@@ -177,13 +229,20 @@ class _RegistrationState extends State<Registration> {
                                   password: password,
                                 );
 
-                                if(UserCredential!=null){
-                                  User? user = FirebaseAuth.instance.currentUser;
-                                  if (user!= null && !user.emailVerified) {
+                                if (UserCredential != null) {
+                                  User? user =
+                                      FirebaseAuth.instance.currentUser;
+                                  if (user != null && !user.emailVerified) {
                                     await user.sendEmailVerification();
                                     // emailVerify = true;
                                   }
-                                  // await DatabaseService(uid: user!.uid).updateUserData('mobile', 'this is iphone 11', 500);
+                                  await AddUserData(uid: user!.uid).Adduserinfo(
+                                      name,
+                                      email,
+                                      phone,
+                                      password,
+                                      address,
+                                  );
                                   Navigator.pop(context);
                                 }
                                 //
@@ -197,12 +256,13 @@ class _RegistrationState extends State<Registration> {
                                 //   });
                                 // }
                               } on FirebaseAuthException catch (e) {
-
                                 setState(() {
-                                  if(e.code=='email-already-in-use'){
+                                  if (e.code == 'email-already-in-use') {
                                     useEmail = true;
                                   }
-
+                                  phoneController.text.isEmpty
+                                      ? phone_validation = true
+                                      : phone_validation = false;
                                   emailController.text.isEmpty
                                       ? emailEmptyValidation = true
                                       : emailEmptyValidation = false;
