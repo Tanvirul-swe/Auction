@@ -4,5 +4,5 @@ This was just an auction product and sales application. Users can post products 
 ## All User Interface
 
 ## Packages use
-## Firebase Auth
+### Firebase Auth
 This package is used to check user authentication. Like Email validation, Email verified check. Send Email verification link and some others
