@@ -2,6 +2,7 @@ import 'package:auction_app/AuctionGallery/AddItem.dart';
 import 'package:auction_app/Dashbord/dashbord.dart';
 import 'package:auction_app/ProductDetails/product_details.dart';
 import 'package:auction_app/profile/profile_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -14,11 +15,35 @@ class AuctionItemList extends StatefulWidget {
 }
 
 class _AuctionItemListState extends State<AuctionItemList> {
+  String name = '';
+  String phone = '';
   final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance
       .collection('ProductInformation')
       .doc('product')
       .collection('productlist')
       .snapshots();
+  User? user = FirebaseAuth.instance.currentUser;
+  getuserinfo() async {
+    await FirebaseFirestore.instance
+        .collection('user')
+        .doc(user!.uid)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        name = documentSnapshot.get('name');
+        phone = documentSnapshot.get('phone');
+      } else {
+        print('Document does not exist on the database');
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    getuserinfo();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,11 +54,11 @@ class _AuctionItemListState extends State<AuctionItemList> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (value) {
-          if (value == 0) {
-          } if(value==1) {
+          if (value == 0) {}
+          if (value == 1) {
             Navigator.pushNamed(context, Dashboard.id);
           }
-          if(value==2){
+          if (value == 2) {
             Navigator.pushNamed(context, Profile.id);
           }
         },
@@ -128,8 +153,10 @@ class _AuctionItemListState extends State<AuctionItemList> {
                                       fontSize: 20,
                                     ),
                                   ),
-                                  Text('Minimum Bid: ${data['MinimumBit'].toString()}'),
-                                  Text('End Date: ${data['EndDate'].toString()}'),
+                                  Text(
+                                      'Minimum Bid: ${data['MinimumBit'].toString()}'),
+                                  Text(
+                                      'End Date: ${data['EndDate'].toString()}'),
                                 ],
                               ),
                             ))
@@ -151,7 +178,9 @@ class _AuctionItemListState extends State<AuctionItemList> {
                               data['photo'],
                               data['MinimumBit'],
                               document.id.toString(),
-                              data['bid'].toString())));
+                              data['bid'].toString(),
+                              name,
+                              phone)));
                     },
                   );
                 }).toList(),

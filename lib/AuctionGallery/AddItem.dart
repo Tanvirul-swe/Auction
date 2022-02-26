@@ -41,7 +41,8 @@ class _AddItemState extends State<AddItem> {
     if (date == null) {
       return 'Select Bid end date';
     } else {
-      return '${date!.day}/${date!.month}/${date!.year}';
+      // return '0${date!.month}-${date!.day}-${date!.year}';
+      return '${date!.year}-0${date!.month}-${date!.day}';
     }
   }
 

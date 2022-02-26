@@ -1,7 +1,6 @@
 import 'package:auction_app/AuctionGallery/AddItem.dart';
 import 'package:auction_app/AuctionGallery/list_of_items.dart';
 import 'package:auction_app/Dashbord/dashbord.dart';
-import 'package:auction_app/ProductDetails/product_details.dart';
 import 'package:auction_app/SignIn_and_SignUp/Registration.dart';
 import 'package:auction_app/SignIn_and_SignUp/SignIn.dart';
 import 'package:auction_app/profile/profile_screen.dart';

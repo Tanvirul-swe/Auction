@@ -1,8 +1,10 @@
+
 import 'package:auction_app/AuctionGallery/AddItem.dart';
 import 'package:auction_app/Services/Database.dart';
 import 'package:auction_app/profile/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Details extends StatefulWidget {
   static String id = 'Details';
@@ -13,9 +15,11 @@ class Details extends StatefulWidget {
   final String minBid;
   final String doc;
   final String price;
+  final String name;
+  final String phone;
 
   Details(this.product_name, this.discription, this.EndDate, this.photoUrl,
-      this.minBid, this.doc, this.price);
+      this.minBid, this.doc, this.price,this.name,this.phone);
 
   @override
   _DetailsState createState() => _DetailsState();
@@ -25,7 +29,7 @@ bool valid = false;
 TextEditingController _controller = TextEditingController();
 
 int newvalue = 0;
-String maxprice='';
+String maxprice = '';
 
 class _DetailsState extends State<Details> {
   Future<void> _displayTextInputDialog(BuildContext context) async {
@@ -62,15 +66,15 @@ class _DetailsState extends State<Details> {
                   int present = int.parse(widget.minBid);
                   int newvalue = int.parse(_controller.text);
                   int max = int.parse(maxprice.toString());
-                   max = max+newvalue;
+                  max = max + newvalue;
                   if (present <= newvalue) {
-                    setState(() async {
-                      final ob = DatabaseService(uid: 'some');
-                      await ob.updateUserBit(
-                          max.toString(), widget.doc, name, phone);
-                      setState(() {});
-                      Navigator.pop(context);
+                    final ob = DatabaseService(uid: 'some');
+                    await ob.updateUserBit(
+                        max.toString(), widget.doc, widget.name, widget.phone);
+                    setState(() {
+
                     });
+                    Navigator.pop(context);
                   } else {}
                 },
               ),
@@ -83,6 +87,16 @@ class _DetailsState extends State<Details> {
       .collection('ProductInformation')
       .doc('product')
       .collection('productlist');
+ var remaindays;
+  @override
+  void initState() {
+    DateTime Enddate = DateTime.parse(widget.EndDate);
+    DateTime now = new DateTime.now();
+    DateTime date = new DateTime(now.year, now.month, now.day);
+    remaindays = date.difference(Enddate).inDays;
+    
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -180,7 +194,7 @@ class _DetailsState extends State<Details> {
                           ),
                           data['people'] != "No one bid now"
                               ? Container(
-                                  height: 100,
+                                  height: 120,
                                   width: double.infinity,
                                   padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
@@ -196,7 +210,7 @@ class _DetailsState extends State<Details> {
                                               2), // changes position of shadow
                                         ),
                                       ]),
-                                  child: Column(
+                                  child: remaindays!=0?Column(
                                     children: [
                                       Row(
                                         children: [
@@ -214,17 +228,36 @@ class _DetailsState extends State<Details> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(data['people']),
-                                          Text(data['phone']),
+                                          Text('Phone : ${data['phone']}')
                                         ],
                                       )
                                     ],
-                                  ),
+                                  ):Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Image.asset('Asset/winner.png',width: 60,height: 60,),
+                                      Text.rich(
+                                          TextSpan(
+                                              text: 'The winner is ',style: TextStyle(
+                                            fontSize: 18
+                                          ),
+                                              children: <InlineSpan>[
+                                                TextSpan(
+                                                  text: data['people'],
+                                                  style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),
+                                                )
+                                              ]
+                                          )
+                                      ),
+                                      Text('Phone : ${data['phone']}')
+                                    ],
+                                  )
                                 )
                               : Container(),
                           SizedBox(
                             height: 10,
                           ),
-                          FloatingActionButton.extended(
+                          remaindays!=0?FloatingActionButton.extended(
                             elevation: 5,
                             backgroundColor: Color(0xFF000080),
                             onPressed: () {
@@ -232,7 +265,7 @@ class _DetailsState extends State<Details> {
                             },
                             label: Text('Place Bid'),
                             icon: Icon(Icons.add),
-                          ),
+                          ):Container(),
                         ],
                       ),
                     )
