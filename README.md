@@ -1,16 +1,8 @@
-# auction_app
+# Auction
+This was just an auction product and sales application. Users can post products with the product title, description, End bid date, minimum bid price. Another user can see a list of auctionable products and can bid after End bid time show winner based on the maximum value.
 
-A new Flutter project.
+## All User Interface
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Packages use
+## Firebase Auth
+This package is used to check user authentication. Like Email validation, Email verified check. Send Email verification link and some others
